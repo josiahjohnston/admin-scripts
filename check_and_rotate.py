@@ -7,6 +7,8 @@ PSQL_BACKUP = "/data1/psql_backups"
 
 # If the change in size is less than this amount, complain loudly
 MAX_CHANGE = -0.1
+# If the backup is smaller than this many bytes, complain loudly
+MIN_VALID_SIZE = 20000000000
 # Keep this many days worth of backups
 KEEP_DAYS = 7
 
@@ -14,6 +16,7 @@ target = "switch_gis-*.pg_dump"
 additional_globspecs = ["switch_gis-{date}_0100.log", "switch_gis-{date}_0100.err_log", "switch_gis_globals-{date}_0030.sql"]
 
 alert_message = "The latest backup ({last_filename}) is {percent_delta} smaller than the last backup ({second_to_last_filename}), which was {old_size} bytes. Because of this, older dumps were not deleted."
+alert_message2 = "The latest backup ({last_filename}) is too small! ({size} bytes). Because of this, older dumps were not deleted."
 
 files = glob.glob(os.path.join(PSQL_BACKUP, target))
 files.sort(key = lambda file: os.path.getmtime(file), reverse = True)
@@ -43,6 +46,9 @@ except ZeroDivisionError: # Backup was 0 bytes, we're totally shot
 
 if delta < MAX_CHANGE:
   print alert_message.format(last_filename = last_two[0], second_to_last_filename = last_two[1], percent_delta = str(-round(delta * 100, 1)) + "%", old_size = last_sizes[1])
+
+elif last_sizes[0] < MIN_VALID_SIZE: 
+  print alert_message2.format(last_filename = last_two[0], size = last_sizes[0])
 
 else: # Rotate!
   to_delete = file_groups[KEEP_DAYS:]
