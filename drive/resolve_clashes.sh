@@ -30,7 +30,7 @@ find $target -regex '.* ([0-9]+).*' | while read p; do
 	p_base=$(echo $p | sed -e 's/ ([0-9]*)//')
 	if [ ! -f "$p_base" ]; then
 		echo mv \"$p\" \"$p_base\"
-		mv \"$p\" \"$p_base\"
+		mv "$p" "$p_base"
 		continue
 	fi
 	r=$(diff -q "$p" "$p_base")
