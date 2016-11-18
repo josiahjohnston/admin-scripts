@@ -1,0 +1,4 @@
+# See man 5 aliases for format
+postmaster:    root
+mysql-backup: rael-sysadmins@googlegroups.com
+root: root rael-sysadmins@googlegroups.com

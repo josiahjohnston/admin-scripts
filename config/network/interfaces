@@ -1,0 +1,22 @@
+# This file describes the network interfaces available on your sy stem and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+
+# DHCP example
+# auto eth0
+# iface eth0 inet dhcp
+
+# Static IP
+auto eth0
+iface eth0 inet static
+  address 169.229.3.2
+  netmask 255.255.255.224
+  gateway 169.229.3.1
+
+dns-nameservers 8.8.8.8
+# DNS nameservers around campus
+#dns-nameservers 128.32.156.23,128.32.156.21,128.32.206.12
