@@ -1,0 +1,43 @@
+# Edit this file to introduce tasks to be run by cron.
+# 
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+# 
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').# 
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+# 
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+# 
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+# 
+# m h  dom mon dow   command
+# Slow weekly logical backup of postgresql databases from switch-db2...
+# 30 0 * * 6 pg_dumpall --file=/data1/psql_backups_old/switch_gis_globals-$(date +'\%Y_\%m_\%d_\%H\%M').sql --host=switch-db2.erg.berkeley.edu --username=postgres --globals-only
+# 0  1 * * 6 pg_dump --file=/data1/psql_backups_old/switch_gis-$(date +'\%Y_\%m_\%d_\%H\%M').pg_dump --host=switch-db2.erg.berkeley.edu --format=custom --compress=9 --username=postgres switch_gis 1>/data1/psql_backups/switch_gis-$(date +'\%Y_\%m_\%d_\%H\%M').log 2>/data1/psql_backups/switch_gis-$(date +'\%Y_\%m_\%d_\%H\%M').err_log && /root/check_and_rotate.py
+# 0  1 * * 7 for d in CAISO_Data switch_china switch_nica switch_nica_v2; do pg_dump --file=/data1/psql_backups_old/${d}-$(date +'\%Y_\%m_\%d_\%H\%M').pg_dump --host=switch-db2.erg.berkeley.edu --format=custom --compress=9 --username=postgres $d 1>/data1/psql_backups_old/${d}-$(date +'\%Y_\%m_\%d_\%H\%M').log 2>/data1/psql_backups_old/${d}-$(date +'\%Y_\%m_\%d_\%H\%M').err_log; done; /root/check_and_rotate.py
+
+# New postgres backup scheme: Directory format backups (one file per table), and use rsnapshot for snapshots
+0  2 * * 6 /root/scripts/psql_backup.sh
+
+# rsnapshot of xserve volumes
+# To execute every 6 hours on the hour, use: 0 */6 * * *       [Command]
+# These overlap with each other every day and send me too many error emails, when the backup script can't start because the last one is still running.
+#0 */6 * * *       /usr/bin/rsnapshot hourly
+#59 05 * * *       /usr/bin/rsnapshot daily
+#59 11 * * 0       /usr/bin/rsnapshot weekly
+#59 11 * * 1       /usr/bin/rsnapshot monthly
+
+# Take 2 .. This should only send 1 error message a month, when the monthly backup starts just before the daily & weekly backup schedule.
+0 6,12,18 * * *       /usr/bin/rsnapshot hourly
+0 0 * * 1,2,3,4,5,6       /usr/bin/rsnapshot daily
+0 0 * * 7       /usr/bin/rsnapshot weekly
+59 23 1 * *       /usr/bin/rsnapshot monthly
