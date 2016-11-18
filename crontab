@@ -20,12 +20,8 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
-# Slow weekly logical backup of postgresql databases from switch-db2...
-# 30 0 * * 6 pg_dumpall --file=/data1/psql_backups_old/switch_gis_globals-$(date +'\%Y_\%m_\%d_\%H\%M').sql --host=switch-db2.erg.berkeley.edu --username=postgres --globals-only
-# 0  1 * * 6 pg_dump --file=/data1/psql_backups_old/switch_gis-$(date +'\%Y_\%m_\%d_\%H\%M').pg_dump --host=switch-db2.erg.berkeley.edu --format=custom --compress=9 --username=postgres switch_gis 1>/data1/psql_backups/switch_gis-$(date +'\%Y_\%m_\%d_\%H\%M').log 2>/data1/psql_backups/switch_gis-$(date +'\%Y_\%m_\%d_\%H\%M').err_log && /root/check_and_rotate.py
-# 0  1 * * 7 for d in CAISO_Data switch_china switch_nica switch_nica_v2; do pg_dump --file=/data1/psql_backups_old/${d}-$(date +'\%Y_\%m_\%d_\%H\%M').pg_dump --host=switch-db2.erg.berkeley.edu --format=custom --compress=9 --username=postgres $d 1>/data1/psql_backups_old/${d}-$(date +'\%Y_\%m_\%d_\%H\%M').log 2>/data1/psql_backups_old/${d}-$(date +'\%Y_\%m_\%d_\%H\%M').err_log; done; /root/check_and_rotate.py
-
-# New postgres backup scheme: Directory format backups (one file per table), and use rsnapshot for snapshots
+# Slow weekly logical backup of postgresql databases from switch-db2.
+# Scheme: Directory format backups (one file per table), and use rsnapshot for snapshots
 0  2 * * 6 /root/scripts/psql_backup.sh
 
 # rsnapshot of xserve volumes

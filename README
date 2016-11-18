@@ -1,0 +1,11 @@
+Scripts and config files for server management.
+
+psql_backup.sh does pull requests of full logical backups from the database server.
+This is a directory-style backup (one table per file), and rsnapshot is configured to
+backup that local directory to make snapshots with file-level deduplication.
+/data1/psql_backups has the most recent backup
+/data1/rsnapshot has the prior snapshots
+
+drive/* are scripts I wrote to try to manage uploads to google drive using a command line
+push/pull linux client named drive. I was trying to treat google drive as a write-only cloud backup of
+most of the lab's archives (all of the non-confidential information).
